@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+    maxHeight: 60,
   },
   categorySelectorContent: {
     paddingHorizontal: 16,
@@ -114,17 +115,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 6,
     borderRadius: 20,
     backgroundColor: '#f0f0f0',
     marginRight: 8,
+    width: 75,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   categoryButtonActive: {
     backgroundColor: '#007AFF',
   },
   categoryButtonText: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: '600',
     color: '#666',
   },
