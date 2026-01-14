@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,17 +8,21 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
-  SafeAreaView,
+  ActivityIndicator,
+  FlatList,
+  Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getRepairServices } from '../services/appointmentService';
+import { createAppointment } from '../services/appointmentService';
 
 const CitasScreen = () => {
   const [formData, setFormData] = useState({
     nombre: '',
     telefono: '',
     email: '',
-    modelo: '',
-    servicio: '',
+    servicio_id: '',
     comentarios: '',
   });
 
@@ -26,6 +30,32 @@ const CitasScreen = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [services, setServices] = useState([]);
+  const [showServicesPicker, setShowServicesPicker] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
+  // Cargar servicios al montar el componente
+  useEffect(() => {
+    const loadServices = async () => {
+      try {
+        setLoading(true);
+        
+        // Obtener servicios de reparación
+        const servicesResult = await getRepairServices();
+        if (servicesResult.success) {
+          setServices(servicesResult.data);
+        }
+      } catch (error) {
+        console.error('Error cargando servicios:', error);
+        Alert.alert('Error', 'No se pudieron cargar los servicios disponibles');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadServices();
+  }, []);
 
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(Platform.OS === 'ios');
@@ -41,38 +71,66 @@ const CitasScreen = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (!formData.nombre || !formData.telefono || !formData.modelo || !formData.servicio) {
+  const handleSubmit = async () => {
+    // Validar campos requeridos
+    if (!formData.nombre || !formData.telefono || !formData.servicio_id) {
       Alert.alert('Error', 'Por favor completa todos los campos obligatorios');
       return;
     }
 
-    Alert.alert(
-      '¡Cita Agendada!',
-      `Tu cita ha sido registrada para ${date.toLocaleDateString()} a las ${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.\n\nTe contactaremos pronto para confirmar.`,
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            // Reset form
-            setFormData({
-              nombre: '',
-              telefono: '',
-              email: '',
-              modelo: '',
-              servicio: '',
-              comentarios: '',
-            });
-            setDate(new Date());
-            setTime(new Date());
-          },
-        },
-      ]
-    );
+    try {
+      setLoading(true);
+
+      // Combinar fecha y hora
+      const appointmentDateTime = new Date(date);
+      appointmentDateTime.setHours(time.getHours());
+      appointmentDateTime.setMinutes(time.getMinutes());
+
+      // Crear cita en Supabase
+      const result = await createAppointment({
+        service_id: formData.servicio_id,
+        appointment_date: appointmentDateTime.toISOString(),
+        notes: `Cliente: ${formData.nombre}\nTeléfono: ${formData.telefono}\nEmail: ${formData.email || 'No proporcionado'}\n${formData.comentarios}`,
+      });
+
+      if (result.success) {
+        Alert.alert(
+          '¡Cita Agendada!',
+          `Tu cita ha sido registrada para ${date.toLocaleDateString('es-ES')} a las ${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.\n\nTe contactaremos pronto para confirmar.`,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Reset form
+                setFormData({
+                  nombre: '',
+                  telefono: '',
+                  email: '',
+                  servicio_id: '',
+                  comentarios: '',
+                });
+                setSelectedService(null);
+                setDate(new Date());
+                setTime(new Date());
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert('Error', result.error || 'No se pudo agendar la cita');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Ocurrió un error al agendar la cita');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {loading && <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />}
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Agendar Cita</Text>
@@ -89,6 +147,7 @@ const CitasScreen = () => {
             placeholder="Ingresa tu nombre"
             value={formData.nombre}
             onChangeText={(text) => setFormData({ ...formData, nombre: text })}
+            editable={!loading}
           />
 
           <Text style={styles.label}>Teléfono *</Text>
@@ -98,6 +157,7 @@ const CitasScreen = () => {
             value={formData.telefono}
             onChangeText={(text) => setFormData({ ...formData, telefono: text })}
             keyboardType="phone-pad"
+            editable={!loading}
           />
 
           <Text style={styles.label}>Email</Text>
@@ -108,26 +168,33 @@ const CitasScreen = () => {
             onChangeText={(text) => setFormData({ ...formData, email: text })}
             keyboardType="email-address"
             autoCapitalize="none"
+            editable={!loading}
           />
 
           {/* Detalles del Servicio */}
           <Text style={styles.sectionTitle}>Detalles del Servicio</Text>
 
-          <Text style={styles.label}>Modelo de iPhone *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ej: iPhone 14 Pro"
-            value={formData.modelo}
-            onChangeText={(text) => setFormData({ ...formData, modelo: text })}
-          />
-
           <Text style={styles.label}>Servicio requerido *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ej: Cambio de pantalla"
-            value={formData.servicio}
-            onChangeText={(text) => setFormData({ ...formData, servicio: text })}
-          />
+          <TouchableOpacity
+            style={styles.serviceButton}
+            onPress={() => setShowServicesPicker(true)}
+            disabled={loading}
+          >
+            <Text style={styles.serviceButtonText}>
+              {selectedService ? selectedService.name : '📋 Selecciona un servicio'}
+            </Text>
+          </TouchableOpacity>
+
+          {selectedService && (
+            <View style={styles.serviceInfo}>
+              <Text style={styles.serviceInfoText}>
+                Precio estimado: ${selectedService.estimated_price}
+              </Text>
+              <Text style={styles.serviceInfoText}>
+                Duración: {selectedService.estimated_duration}
+              </Text>
+            </View>
+          )}
 
           <Text style={styles.label}>Comentarios adicionales</Text>
           <TextInput
@@ -137,6 +204,7 @@ const CitasScreen = () => {
             onChangeText={(text) => setFormData({ ...formData, comentarios: text })}
             multiline
             numberOfLines={4}
+            editable={!loading}
           />
 
           {/* Fecha y Hora */}
@@ -146,6 +214,7 @@ const CitasScreen = () => {
           <TouchableOpacity
             style={styles.dateButton}
             onPress={() => setShowDatePicker(true)}
+            disabled={loading}
           >
             <Text style={styles.dateButtonText}>
               📅 {date.toLocaleDateString('es-ES', { 
@@ -171,6 +240,7 @@ const CitasScreen = () => {
           <TouchableOpacity
             style={styles.dateButton}
             onPress={() => setShowTimePicker(true)}
+            disabled={loading}
           >
             <Text style={styles.dateButtonText}>
               ⏰ {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -187,8 +257,14 @@ const CitasScreen = () => {
           )}
 
           {/* Submit Button */}
-          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Confirmar Cita</Text>
+          <TouchableOpacity 
+            style={[styles.submitButton, loading && styles.submitButtonDisabled]} 
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            <Text style={styles.submitButtonText}>
+              {loading ? 'Procesando...' : 'Confirmar Cita'}
+            </Text>
           </TouchableOpacity>
 
           <Text style={styles.disclaimer}>
@@ -196,6 +272,39 @@ const CitasScreen = () => {
           </Text>
         </View>
       </ScrollView>
+
+      {/* Modal de Servicios */}
+      <Modal visible={showServicesPicker} transparent animationType="slide">
+        <SafeAreaView style={styles.modal}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Selecciona un servicio</Text>
+            <TouchableOpacity onPress={() => setShowServicesPicker(false)}>
+              <Text style={styles.closeButton}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={services}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.serviceOption}
+                onPress={() => {
+                  setSelectedService(item);
+                  setFormData({ ...formData, servicio_id: item.id });
+                  setShowServicesPicker(false);
+                }}
+              >
+                <Text style={styles.serviceOptionName}>{item.name}</Text>
+                <Text style={styles.serviceOptionDesc}>{item.description}</Text>
+                <View style={styles.serviceOptionFooter}>
+                  <Text style={styles.serviceOptionPrice}>${item.estimated_price}</Text>
+                  <Text style={styles.serviceOptionDuration}>{item.estimated_duration}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -204,6 +313,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
+  },
+  loader: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginLeft: -25,
+    marginTop: -25,
+    zIndex: 999,
   },
   header: {
     backgroundColor: '#fff',
@@ -220,6 +337,7 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 14,
     color: '#666',
+    marginBottom: 12,
   },
   form: {
     padding: 16,
@@ -251,6 +369,32 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
   },
+  serviceButton: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 10,
+    padding: 14,
+    justifyContent: 'center',
+  },
+  serviceButtonText: {
+    fontSize: 15,
+    color: '#1a1a1a',
+  },
+  serviceInfo: {
+    backgroundColor: '#f0f7ff',
+    borderLeftWidth: 3,
+    borderLeftColor: '#007AFF',
+    padding: 12,
+    borderRadius: 6,
+    marginTop: 8,
+  },
+  serviceInfoText: {
+    fontSize: 13,
+    color: '#007AFF',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
   dateButton: {
     backgroundColor: '#fff',
     borderWidth: 1,
@@ -270,6 +414,9 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 12,
   },
+  submitButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
   submitButtonText: {
     color: '#fff',
     fontSize: 16,
@@ -280,6 +427,128 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  modal: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  closeButton: {
+    fontSize: 24,
+    color: '#666',
+    paddingHorizontal: 12,
+  },
+  serviceOption: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    padding: 16,
+  },
+  serviceOptionName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  serviceOptionDesc: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 8,
+  },
+  serviceOptionFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  serviceOptionPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#34C759',
+  },
+  serviceOptionDuration: {
+    fontSize: 12,
+    color: '#999',
+  },
+  appointmentCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#007AFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  statusBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  status_pending: {
+    backgroundColor: '#FFF3CD',
+  },
+  status_confirmed: {
+    backgroundColor: '#D4EDDA',
+  },
+  status_completed: {
+    backgroundColor: '#D1ECF1',
+  },
+  status_cancelled: {
+    backgroundColor: '#F8D7DA',
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  appointmentService: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  appointmentDate: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
+  },
+  appointmentTime: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 8,
+  },
+  appointmentNotes: {
+    fontSize: 12,
+    color: '#999',
+    fontStyle: 'italic',
+    marginTop: 8,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
   },
 });
 
