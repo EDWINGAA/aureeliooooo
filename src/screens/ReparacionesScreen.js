@@ -6,12 +6,29 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { reparacionesData } from '../data/mockData';
 import ServiceCard from '../components/ServiceCard';
 
 const ReparacionesScreen = ({ navigation }) => {
-  const [selectedModel, setSelectedModel] = useState(reparacionesData[0]);
+  const [selectedFamilia, setSelectedFamilia] = useState(reparacionesData[0]);
+  const [selectedModel, setSelectedModel] = useState(reparacionesData[0].modelos[0]);
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedFamiliaForModal, setSelectedFamiliaForModal] = useState(null);
+
+  const handleSelectModel = (modelo) => {
+    setSelectedModel(modelo);
+    setModalVisible(false);
+    setMenuOpen(null);
+  };
+
+  const openMenu = (familia) => {
+    setSelectedFamiliaForModal(familia);
+    setModalVisible(true);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,27 +43,64 @@ const ReparacionesScreen = ({ navigation }) => {
         showsHorizontalScrollIndicator={false}
         style={styles.modelSelector}
         contentContainerStyle={styles.modelSelectorContent}
+        scrollEnabled={true}
       >
-        {reparacionesData.map((item) => (
+        {reparacionesData.map((familia) => (
           <TouchableOpacity
-            key={item.id}
+            key={familia.id}
             style={[
               styles.modelButton,
-              selectedModel.id === item.id && styles.modelButtonActive,
+              menuOpen === familia.id && styles.modelButtonActive,
             ]}
-            onPress={() => setSelectedModel(item)}
+            onPress={() => openMenu(familia)}
           >
             <Text
               style={[
                 styles.modelButtonText,
-                selectedModel.id === item.id && styles.modelButtonTextActive,
+                menuOpen === familia.id && styles.modelButtonTextActive,
               ]}
             >
-              {item.modelo}
+              {familia.familia}
             </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Modal Dropdown Menu */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setModalVisible(false)}
+        >
+          <View style={styles.dropdownMenuModal}>
+            {selectedFamiliaForModal && selectedFamiliaForModal.modelos.map((modelo) => (
+              <TouchableOpacity
+                key={modelo.id}
+                style={[
+                  styles.dropdownItem,
+                  selectedModel.id === modelo.id && styles.dropdownItemSelected,
+                ]}
+                onPress={() => handleSelectModel(modelo)}
+              >
+                <Text
+                  style={[
+                    styles.dropdownItemText,
+                    selectedModel.id === modelo.id && styles.dropdownItemTextSelected,
+                  ]}
+                >
+                  {modelo.modelo}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       {/* Services List */}
       <ScrollView style={styles.servicesList} showsVerticalScrollIndicator={false}>
@@ -100,6 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
+    maxHeight: 60,
   },
   modelSelectorContent: {
     paddingHorizontal: 16,
@@ -107,22 +162,78 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   modelButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 6,
     borderRadius: 20,
     backgroundColor: '#f0f0f0',
     marginRight: 10,
+    width: 70,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modelButtonActive: {
     backgroundColor: '#007AFF',
   },
   modelButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     color: '#666',
   },
   modelButtonTextActive: {
     color: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownMenuModal: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+    width: '80%',
+    maxHeight: 300,
+    overflow: 'hidden',
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 40,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 1000,
+    minWidth: 150,
+  },
+  dropdownItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#e7f3ff',
+  },
+  dropdownItemText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500',
+  },
+  dropdownItemTextSelected: {
+    color: '#007AFF',
+    fontWeight: '700',
   },
   servicesList: {
     flex: 1,

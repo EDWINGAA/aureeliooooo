@@ -1,53 +1,147 @@
 // Datos mock para servicios de reparación de iPhone
 export const reparacionesData = [
   {
-    id: '1',
-    modelo: 'iPhone 14 Pro Max',
-    servicios: [
-      { id: 's1', nombre: 'Pantalla', precio: 350, tiempo: '1-2 horas' },
-      { id: 's2', nombre: 'Batería', precio: 120, tiempo: '30 min' },
-      { id: 's3', nombre: 'Cámara Trasera', precio: 180, tiempo: '1 hora' },
-      { id: 's4', nombre: 'Puerto de Carga', precio: 90, tiempo: '45 min' },
+    id: '14',
+    familia: 'iPhone 14',
+    modelos: [
+      {
+        id: '1',
+        modelo: 'iPhone 14',
+        servicios: [
+          { id: 's1', nombre: 'Pantalla', precio: 300, tiempo: '1-2 horas' },
+          { id: 's2', nombre: 'Batería', precio: 100, tiempo: '30 min' },
+          { id: 's3', nombre: 'Cámara Trasera', precio: 150, tiempo: '1 hora' },
+          { id: 's4', nombre: 'Puerto de Carga', precio: 80, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '2',
+        modelo: 'iPhone 14 Pro',
+        servicios: [
+          { id: 's5', nombre: 'Pantalla', precio: 320, tiempo: '1-2 horas' },
+          { id: 's6', nombre: 'Batería', precio: 110, tiempo: '30 min' },
+          { id: 's7', nombre: 'Cámara Trasera', precio: 170, tiempo: '1 hora' },
+          { id: 's8', nombre: 'Puerto de Carga', precio: 85, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '3',
+        modelo: 'iPhone 14 Pro Max',
+        servicios: [
+          { id: 's9', nombre: 'Pantalla', precio: 350, tiempo: '1-2 horas' },
+          { id: 's10', nombre: 'Batería', precio: 120, tiempo: '30 min' },
+          { id: 's11', nombre: 'Cámara Trasera', precio: 180, tiempo: '1 hora' },
+          { id: 's12', nombre: 'Puerto de Carga', precio: 90, tiempo: '45 min' },
+        ]
+      }
     ]
   },
   {
-    id: '2',
-    modelo: 'iPhone 14 Pro',
-    servicios: [
-      { id: 's5', nombre: 'Pantalla', precio: 320, tiempo: '1-2 horas' },
-      { id: 's6', nombre: 'Batería', precio: 110, tiempo: '30 min' },
-      { id: 's7', nombre: 'Cámara Trasera', precio: 170, tiempo: '1 hora' },
-      { id: 's8', nombre: 'Puerto de Carga', precio: 85, tiempo: '45 min' },
+    id: '13',
+    familia: 'iPhone 13',
+    modelos: [
+      {
+        id: '4',
+        modelo: 'iPhone 13',
+        servicios: [
+          { id: 's13', nombre: 'Pantalla', precio: 250, tiempo: '1-2 horas' },
+          { id: 's14', nombre: 'Batería', precio: 90, tiempo: '30 min' },
+          { id: 's15', nombre: 'Cámara Trasera', precio: 140, tiempo: '1 hora' },
+          { id: 's16', nombre: 'Puerto de Carga', precio: 75, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '5',
+        modelo: 'iPhone 13 Pro',
+        servicios: [
+          { id: 's17', nombre: 'Pantalla', precio: 270, tiempo: '1-2 horas' },
+          { id: 's18', nombre: 'Batería', precio: 95, tiempo: '30 min' },
+          { id: 's19', nombre: 'Cámara Trasera', precio: 155, tiempo: '1 hora' },
+          { id: 's20', nombre: 'Puerto de Carga', precio: 80, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '6',
+        modelo: 'iPhone 13 Pro Max',
+        servicios: [
+          { id: 's21', nombre: 'Pantalla', precio: 290, tiempo: '1-2 horas' },
+          { id: 's22', nombre: 'Batería', precio: 100, tiempo: '30 min' },
+          { id: 's23', nombre: 'Cámara Trasera', precio: 165, tiempo: '1 hora' },
+          { id: 's24', nombre: 'Puerto de Carga', precio: 85, tiempo: '45 min' },
+        ]
+      }
     ]
   },
   {
-    id: '3',
-    modelo: 'iPhone 13',
-    servicios: [
-      { id: 's9', nombre: 'Pantalla', precio: 250, tiempo: '1-2 horas' },
-      { id: 's10', nombre: 'Batería', precio: 90, tiempo: '30 min' },
-      { id: 's11', nombre: 'Cámara Trasera', precio: 140, tiempo: '1 hora' },
-      { id: 's12', nombre: 'Puerto de Carga', precio: 75, tiempo: '45 min' },
+    id: '12',
+    familia: 'iPhone 12',
+    modelos: [
+      {
+        id: '7',
+        modelo: 'iPhone 12',
+        servicios: [
+          { id: 's25', nombre: 'Pantalla', precio: 220, tiempo: '1-2 horas' },
+          { id: 's26', nombre: 'Batería', precio: 80, tiempo: '30 min' },
+          { id: 's27', nombre: 'Cámara Trasera', precio: 120, tiempo: '1 hora' },
+          { id: 's28', nombre: 'Puerto de Carga', precio: 70, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '8',
+        modelo: 'iPhone 12 Pro',
+        servicios: [
+          { id: 's29', nombre: 'Pantalla', precio: 240, tiempo: '1-2 horas' },
+          { id: 's30', nombre: 'Batería', precio: 85, tiempo: '30 min' },
+          { id: 's31', nombre: 'Cámara Trasera', precio: 130, tiempo: '1 hora' },
+          { id: 's32', nombre: 'Puerto de Carga', precio: 75, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '9',
+        modelo: 'iPhone 12 Pro Max',
+        servicios: [
+          { id: 's33', nombre: 'Pantalla', precio: 260, tiempo: '1-2 horas' },
+          { id: 's34', nombre: 'Batería', precio: 90, tiempo: '30 min' },
+          { id: 's35', nombre: 'Cámara Trasera', precio: 140, tiempo: '1 hora' },
+          { id: 's36', nombre: 'Puerto de Carga', precio: 80, tiempo: '45 min' },
+        ]
+      }
     ]
   },
   {
-    id: '4',
-    modelo: 'iPhone 12',
-    servicios: [
-      { id: 's13', nombre: 'Pantalla', precio: 220, tiempo: '1-2 horas' },
-      { id: 's14', nombre: 'Batería', precio: 80, tiempo: '30 min' },
-      { id: 's15', nombre: 'Cámara Trasera', precio: 120, tiempo: '1 hora' },
-      { id: 's16', nombre: 'Puerto de Carga', precio: 70, tiempo: '45 min' },
-    ]
-  },
-  {
-    id: '5',
-    modelo: 'iPhone 11',
-    servicios: [
-      { id: 's17', nombre: 'Pantalla', precio: 180, tiempo: '1-2 horas' },
-      { id: 's18', nombre: 'Batería', precio: 70, tiempo: '30 min' },
-      { id: 's19', nombre: 'Cámara Trasera', precio: 100, tiempo: '1 hora' },
-      { id: 's20', nombre: 'Puerto de Carga', precio: 60, tiempo: '45 min' },
+    id: '11',
+    familia: 'iPhone 11',
+    modelos: [
+      {
+        id: '10',
+        modelo: 'iPhone 11',
+        servicios: [
+          { id: 's37', nombre: 'Pantalla', precio: 180, tiempo: '1-2 horas' },
+          { id: 's38', nombre: 'Batería', precio: 70, tiempo: '30 min' },
+          { id: 's39', nombre: 'Cámara Trasera', precio: 100, tiempo: '1 hora' },
+          { id: 's40', nombre: 'Puerto de Carga', precio: 60, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '11',
+        modelo: 'iPhone 11 Pro',
+        servicios: [
+          { id: 's41', nombre: 'Pantalla', precio: 200, tiempo: '1-2 horas' },
+          { id: 's42', nombre: 'Batería', precio: 75, tiempo: '30 min' },
+          { id: 's43', nombre: 'Cámara Trasera', precio: 110, tiempo: '1 hora' },
+          { id: 's44', nombre: 'Puerto de Carga', precio: 65, tiempo: '45 min' },
+        ]
+      },
+      {
+        id: '12',
+        modelo: 'iPhone 11 Pro Max',
+        servicios: [
+          { id: 's45', nombre: 'Pantalla', precio: 220, tiempo: '1-2 horas' },
+          { id: 's46', nombre: 'Batería', precio: 80, tiempo: '30 min' },
+          { id: 's47', nombre: 'Cámara Trasera', precio: 120, tiempo: '1 hora' },
+          { id: 's48', nombre: 'Puerto de Carga', precio: 70, tiempo: '45 min' },
+        ]
+      }
     ]
   },
 ];
