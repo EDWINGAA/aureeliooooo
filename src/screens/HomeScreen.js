@@ -24,7 +24,7 @@ const HomeScreen = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🍎 iPhone Repair Center</Text>
+          <Text style={styles.headerTitle}>iPhone Repair Center</Text>
           <Text style={styles.headerSubtitle}>Especialistas en iPhone y Accesorios</Text>
         </View>
 
@@ -32,10 +32,10 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={[styles.actionCard, { backgroundColor: '#34C759' }]}
-            onPress={() => navigation.navigate('Reparaciones')}
+            onPress={() => navigation.navigate('Fixes')}
           >
             <Text style={styles.actionIcon}>🔧</Text>
-            <Text style={styles.actionTitle}>Reparaciones</Text>
+            <Text style={styles.actionTitle}>Fixes</Text>
             <Text style={styles.actionSubtitle}>Ver servicios</Text>
           </TouchableOpacity>
 
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a1a1a',
     padding: 24,
     alignItems: 'center',
+    justifyContent: 'center',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
