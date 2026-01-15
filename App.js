@@ -39,11 +39,11 @@ const TabNavigator = () => {
         tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: {
           backgroundColor: '#fff',
-          borderTopWidth: 1,
+          borderTopWidth: 0,
           borderTopColor: '#e0e0e0',
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 80,
+          paddingBottom: 16,
+          paddingTop: 12,
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -73,7 +73,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Reparaciones"
+        name="Fixes"
         component={ReparacionesScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
