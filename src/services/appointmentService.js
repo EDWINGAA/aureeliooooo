@@ -7,6 +7,7 @@ import { supabase } from './supabaseClient';
  */
 export const createAppointment = async (appointmentData) => {
   try {
+    //hola
     // Validar campos requeridos
     const requiredFields = ['appointment_date', 'service_id'];
     const missingFields = requiredFields.filter(field => !appointmentData[field]);
