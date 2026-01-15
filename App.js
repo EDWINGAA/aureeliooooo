@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { CartProvider, useCart } from './src/context/CartContext';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -38,28 +39,32 @@ const TabNavigator = () => {
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopWidth: 0,
-          borderTopColor: '#e0e0e0',
-          height: 80,
-          paddingBottom: 16,
-          paddingTop: 12,
+          backgroundColor: '#F2F2F7',  // Fondo gris claro estilo Apple
+          borderTopWidth: 0.5,
+          borderTopColor: '#C6C6C8',
+          height: 85,
+          paddingBottom: 10,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
+          marginBottom: 4,
         },
         headerStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#F2F2F7',
           elevation: 0,
           shadowOpacity: 0,
-          borderBottomWidth: 1,
-          borderBottomColor: '#e0e0e0',
+          shadowRadius: 0,
+          borderBottomWidth: 0.5,
+          borderBottomColor: '#C6C6C8',
         },
         headerTitleStyle: {
           fontWeight: '700',
           fontSize: 18,
+          color: '#1D1D1F',
         },
+        headerTintColor: '#1D1D1F',
       }}
     >
       <Tab.Screen
@@ -67,8 +72,9 @@ const TabNavigator = () => {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size }}>🏠</Text>
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
+          tabBarLabel: 'Inicio',
           headerShown: false,
         }}
       />
@@ -77,8 +83,9 @@ const TabNavigator = () => {
         component={ReparacionesScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size }}>🔧</Text>
+            <Ionicons name="construct-outline" size={size} color={color} />
           ),
+          tabBarLabel: 'Reparaciones',
         }}
       />
       <Tab.Screen
@@ -86,8 +93,9 @@ const TabNavigator = () => {
         component={AccesoriosScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size }}>🛍️</Text>
+            <Ionicons name="bag-handle-outline" size={size} color={color} />
           ),
+          tabBarLabel: 'Accesorios',
         }}
       />
       <Tab.Screen
@@ -95,8 +103,9 @@ const TabNavigator = () => {
         component={CitasScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size }}>📅</Text>
+            <Ionicons name="calendar-outline" size={size} color={color} />
           ),
+          tabBarLabel: 'Citas',
         }}
       />
       <Tab.Screen
@@ -105,21 +114,23 @@ const TabNavigator = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <View>
-              <Text style={{ fontSize: size }}>🛒</Text>
+              <Ionicons name="cart-outline" size={size} color={color} />
               {cartCount > 0 && <TabBarBadge count={cartCount} />}
             </View>
           ),
-          tabBarBadge: cartCount > 0 ? cartCount : undefined,
+          tabBarLabel: 'Carrito',
           tabBarBadgeStyle: {
             backgroundColor: '#FF3B30',
-            color: '#fff',
-            fontSize: 10,
-            fontWeight: '700',
-            minWidth: 18,
-            height: 18,
-            borderRadius: 9,
+            borderRadius: 10,
+            minWidth: 20,
+            height: 20,
             alignItems: 'center',
             justifyContent: 'center',
+            fontSize: 11,
+            fontWeight: '700',
+            color: '#fff',
+            top: -5,
+            right: -8,
           },
         }}
       />
@@ -149,14 +160,13 @@ const styles = StyleSheet.create({
   badge: {
     position: 'absolute',
     right: -6,
-    top: -4,
+    top: -3,
     backgroundColor: '#FF3B30',
     borderRadius: 8,
     minWidth: 16,
     height: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 4,
   },
   badgeText: {
     color: '#fff',

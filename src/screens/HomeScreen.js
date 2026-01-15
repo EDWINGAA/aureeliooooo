@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { contactoData } from '../data/mockData';
 
 const HomeScreen = ({ navigation }) => {
@@ -29,44 +30,44 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.headerSubtitle}>Especialistas en iPhone y Accesorios</Text>
         </View>
 
+        {/* Sección integrada: Contacto + Imagen */}
         <View style={styles.contactSection}>
           <Text style={styles.sectionTitle}>Contáctanos</Text>
+          
           <View style={styles.contactInfo}>
-            <Text style={styles.contactText}>📍 {contactoData.direccion}</Text>
-            <Text style={styles.contactText}>⏰ {contactoData.horario}</Text>
-            <Text style={styles.contactText}>📧 {contactoData.email}</Text>
+            <View style={styles.contactItem}>
+              <Ionicons name="location-outline" size={20} color="#666" />
+              <Text style={styles.contactText}>{contactoData.direccion}</Text>
+            </View>
+            <View style={styles.contactItem}>
+              <Ionicons name="time-outline" size={20} color="#666" />
+              <Text style={styles.contactText}>{contactoData.horario}</Text>
+            </View>
+            <View style={styles.contactItem}>
+              <Ionicons name="mail-outline" size={20} color="#666" />
+              <Text style={styles.contactText}>{contactoData.email}</Text>
+            </View>
           </View>
+
           <View style={styles.contactButtons}>
             <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsApp}>
-              <Text style={styles.contactButtonText}>💬 WhatsApp</Text>
+              <Ionicons name="logo-whatsapp" size={20} color="#fff" style={styles.iconButton} />
+              <Text style={styles.contactButtonText}>WhatsApp</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.callButton} onPress={handleCall}>
-              <Text style={styles.contactButtonText}>📞 Llamar</Text>
+              <Ionicons name="call-outline" size={20} color="#fff" style={styles.iconButton} />
+              <Text style={styles.contactButtonText}>Llamar</Text>
             </TouchableOpacity>
-            
           </View>
+
+          <Image source={require('../../assets/appleimg.jpg')} style={styles.image} />
         </View>
-              <Image source={require('../../assets/appleimg.jpg')} style={styles.image} />
-</ScrollView>
-      
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  image: {
-    width: '100%',
-    height: 390,
-    resizeMode: 'contain',
-    padding: 15,
-    borderRadius: 20,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    marginTop: -25,
-  },
-
   container: {
     flex: 1,
     backgroundColor: '#a9b0b8',
@@ -75,80 +76,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
     padding: 24,
     alignItems: 'center',
- 
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     color: '#fff',
     marginBottom: 8,
+    marginTop: 10,
   },
   headerSubtitle: {
     fontSize: 14,
     color: '#ccc',
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    marginTop: 20,
-    gap: 12,
-  },
-  actionCard: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  actionIcon: {
-    fontSize: 40,
-    marginBottom: 8,
-  },
-  actionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  actionSubtitle: {
-    fontSize: 12,
-    color: '#fff',
-    opacity: 0.9,
-  },
-  infoSection: {
-    backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginTop: 24,
-    padding: 20,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: 16,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  featureIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  featureText: {
-    fontSize: 15,
-    color: '#333',
   },
   contactSection: {
     backgroundColor: '#ffffff',
@@ -163,36 +101,66 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   contactInfo: {
-    marginBottom: 16,
+    marginBottom: 24,
+  },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   contactText: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 8,
+    marginLeft: 12,
+    flex: 1,
   },
   contactButtons: {
     flexDirection: 'row',
     gap: 12,
+    marginBottom: 24,
   },
   whatsappButton: {
     flex: 1,
-    backgroundColor: '#258ad3',
-    padding: 14,
-    borderRadius: 10,
+    backgroundColor: '#25D366',
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
   },
   callButton: {
     flex: 1,
     backgroundColor: '#258ad3',
-    padding: 14,
-    borderRadius: 10,
+    padding: 16,
+    borderRadius: 12,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  iconButton: {
+    marginRight: 2,
   },
   contactButtonText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 15,
+  },
+  image: {
+    width: 300,
+    height: 300,
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    borderRadius: 12,
   },
 });
 
