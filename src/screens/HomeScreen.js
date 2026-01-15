@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import { contactoData } from '../data/mockData';
 
@@ -28,69 +29,6 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.headerSubtitle}>Especialistas en iPhone y Accesorios</Text>
         </View>
 
-        {/* Quick Actions */}
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={[styles.actionCard, { backgroundColor: '#34C759' }]}
-            onPress={() => navigation.navigate('Fixes')}
-          >
-            <Text style={styles.actionIcon}>🔧</Text>
-            <Text style={styles.actionTitle}>Fixes</Text>
-            <Text style={styles.actionSubtitle}>Ver servicios</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionCard, { backgroundColor: '#007AFF' }]}
-            onPress={() => navigation.navigate('Accesorios')}
-          >
-            <Text style={styles.actionIcon}>🛍️</Text>
-            <Text style={styles.actionTitle}>Accesorios</Text>
-            <Text style={styles.actionSubtitle}>Catálogo</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={[styles.actionCard, { backgroundColor: '#FF9500' }]}
-            onPress={() => navigation.navigate('Citas')}
-          >
-            <Text style={styles.actionIcon}>📅</Text>
-            <Text style={styles.actionTitle}>Agendar Cita</Text>
-            <Text style={styles.actionSubtitle}>Reserva tu hora</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionCard, { backgroundColor: '#FF3B30' }]}
-            onPress={() => navigation.navigate('Carrito')}
-          >
-            <Text style={styles.actionIcon}>🛒</Text>
-            <Text style={styles.actionTitle}>Mi Carrito</Text>
-            <Text style={styles.actionSubtitle}>Ver compras</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Info Section */}
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>¿Por qué elegirnos?</Text>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>✅</Text>
-            <Text style={styles.featureText}>Repuestos originales y garantizados</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>⚡</Text>
-            <Text style={styles.featureText}>Reparación rápida (mayoría en el día)</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>🔒</Text>
-            <Text style={styles.featureText}>Garantía de 90 días</Text>
-          </View>
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>👨‍🔧</Text>
-            <Text style={styles.featureText}>Técnicos certificados</Text>
-          </View>
-        </View>
-
-        {/* Contact Section */}
         <View style={styles.contactSection}>
           <Text style={styles.sectionTitle}>Contáctanos</Text>
           <View style={styles.contactInfo}>
@@ -105,25 +43,39 @@ const HomeScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.callButton} onPress={handleCall}>
               <Text style={styles.contactButtonText}>📞 Llamar</Text>
             </TouchableOpacity>
+            
           </View>
         </View>
-      </ScrollView>
+              <Image source={require('../../assets/appleimg.jpg')} style={styles.image} />
+</ScrollView>
+      
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  image: {
+    width: '100%',
+    height: 390,
+    resizeMode: 'contain',
+    padding: 15,
+    borderRadius: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    marginTop: -25,
+  },
+
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#a9b0b8',
   },
   header: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#666',
     padding: 24,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+ 
   },
   headerTitle: {
     fontSize: 28,
@@ -199,13 +151,13 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   contactSection: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     marginHorizontal: 16,
     marginTop: 16,
     marginBottom: 24,
     padding: 20,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -225,14 +177,14 @@ const styles = StyleSheet.create({
   },
   whatsappButton: {
     flex: 1,
-    backgroundColor: '#25D366',
+    backgroundColor: '#258ad3',
     padding: 14,
     borderRadius: 10,
     alignItems: 'center',
   },
   callButton: {
     flex: 1,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#258ad3',
     padding: 14,
     borderRadius: 10,
     alignItems: 'center',
