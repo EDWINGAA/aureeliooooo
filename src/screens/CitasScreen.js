@@ -12,7 +12,6 @@ import {
   FlatList,
   Modal,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getRepairServices } from '../services/appointmentService';
 import { createAppointment } from '../services/appointmentService';
@@ -142,15 +141,15 @@ const CitasScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {loading && <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />}
       
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Agendar Cita</Text>
-          <Text style={styles.headerSubtitle}>Reserva tu hora de reparación</Text>
-        </View>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Agendar Cita</Text>
+        <Text style={styles.headerSubtitle}>Reserva tu hora de reparación</Text>
+      </View>
 
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.form}>
           {/* Información Personal */}
           <Text style={styles.sectionTitle}>Información Personal</Text>
@@ -289,7 +288,7 @@ const CitasScreen = () => {
 
       {/* Modal de Servicios */}
       <Modal visible={showServicesPicker} transparent animationType="slide">
-        <SafeAreaView style={styles.modal}>
+        <View style={styles.modal}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Selecciona un servicio</Text>
             <TouchableOpacity onPress={() => setShowServicesPicker(false)}>
@@ -317,9 +316,9 @@ const CitasScreen = () => {
               </TouchableOpacity>
             )}
           />
-        </SafeAreaView>
+        </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -338,7 +337,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#fff',
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
@@ -351,7 +351,6 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 12,
   },
   form: {
     padding: 16,
@@ -421,7 +420,7 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
   },
   submitButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#007AFF',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

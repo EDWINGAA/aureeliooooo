@@ -271,10 +271,10 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#007AFF',
+    color: '#34C759',
   },
   checkoutButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#007AFF',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

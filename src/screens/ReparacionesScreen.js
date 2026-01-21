@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#e0e0e0',
   },
   ctaButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#007AFF',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

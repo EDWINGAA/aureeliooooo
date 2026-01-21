@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
 } from 'react-native';
 import ProductCard from '../components/ProductCard';
@@ -25,6 +24,8 @@ const AccesoriosScreen = () => {
       setLoading(true);
       const result = await getProducts();
       if (result.success) {
+        console.log('Productos cargados:', result.data);
+        console.log('Categorías disponibles:', [...new Set(result.data.map(p => p.categoria))]);
         setProducts(result.data || []);
       } else {
         setProducts([]);
@@ -38,6 +39,8 @@ const AccesoriosScreen = () => {
   const filteredProducts = selectedCategory === 'Todos'
     ? products
     : products.filter(product => product.categoria === selectedCategory);
+  
+  console.log(`Filtro: ${selectedCategory} | Total productos: ${products.length} | Filtrados: ${filteredProducts.length}`);
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -47,10 +50,10 @@ const AccesoriosScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Tienda de Accesorios</Text>
-        <Text style={styles.headerSubtitle}>Accesorios premium para tu iPhone</Text>
+        <Text style={styles.screenTitle}>Tienda de Accesorios</Text>
+        <Text style={styles.screenSubtitle}>Accesorios premium para tu iPhone</Text>
       </View>
 
       {/* Category Filter */}
@@ -95,7 +98,7 @@ const AccesoriosScreen = () => {
         ))}
         <View style={styles.bottomSpacer} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -106,17 +109,18 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#fff',
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
-  headerTitle: {
+  screenTitle: {
     fontSize: 24,
     fontWeight: '700',
     color: '#1a1a1a',
     marginBottom: 4,
   },
-  headerSubtitle: {
+  screenSubtitle: {
     fontSize: 14,
     color: '#666',
   },
