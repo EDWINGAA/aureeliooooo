@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const ProductCard = ({ product, onAddToCart }) => {
+  const price = product.precio ?? product.price ?? 0;
   return (
     <View style={styles.card}>
       <View style={styles.iconContainer}>
@@ -12,10 +13,10 @@ const ProductCard = ({ product, onAddToCart }) => {
         <Text style={styles.category}>{product.categoria}</Text>
         <Text style={styles.description} numberOfLines={2}>{product.descripcion}</Text>
         <View style={styles.footer}>
-          <Text style={styles.price}>${product.precio}</Text>
+          <Text style={styles.price}>${price}</Text>
           <TouchableOpacity 
             style={styles.addButton}
-            onPress={() => onAddToCart(product)}
+            onPress={() => onAddToCart({ ...product, price })}
           >
             <Text style={styles.addButtonText}>Agregar</Text>
           </TouchableOpacity>

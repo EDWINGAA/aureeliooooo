@@ -13,6 +13,8 @@ import ReparacionesScreen from './src/screens/ReparacionesScreen';
 import AccesoriosScreen from './src/screens/AccesoriosScreen';
 import CitasScreen from './src/screens/CitasScreen';
 import CarritoScreen from './src/screens/CarritoScreen';
+import NotificacionesScreen from './src/screens/NotificacionesScreen';
+import NotificationDetailScreen from './src/screens/NotificationDetailScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -109,6 +111,16 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
+        name="Notificaciones"
+        component={NotificacionesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="notifications-outline" size={size} color={color} />
+          ),
+          tabBarLabel: 'Notificaciones',
+        }}
+      />
+      <Tab.Screen
         name="Carrito"
         component={CarritoScreen}
         options={{
@@ -144,12 +156,13 @@ export default function App() {
     <CartProvider>
       <NavigationContainer>
         <StatusBar style="dark" />
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Main" component={TabNavigator} />
+          <Stack.Screen
+            name="NotificationDetail"
+            component={NotificationDetailScreen}
+            options={{ headerShown: true, title: 'Detalle de notificación' }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </CartProvider>

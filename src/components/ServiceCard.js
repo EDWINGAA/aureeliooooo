@@ -2,15 +2,18 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const ServiceCard = ({ servicio, modelo, onPress }) => {
+  const name = servicio.nombre || servicio.name;
+  const price = servicio.precio ?? servicio.estimated_price ?? 0;
+  const time = servicio.tiempo || servicio.estimated_duration || 'Tiempo estimado no disponible';
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={styles.header}>
-        <Text style={styles.serviceName}>{servicio.nombre}</Text>
-        <Text style={styles.price}>${servicio.precio}</Text>
+        <Text style={styles.serviceName}>{name}</Text>
+        <Text style={styles.price}>${price}</Text>
       </View>
       <View style={styles.details}>
-        <Text style={styles.time}>⏱️ {servicio.tiempo}</Text>
-        <Text style={styles.model}>📱 {modelo}</Text>
+        <Text style={styles.time}>⏱️ {time}</Text>
+        {modelo ? <Text style={styles.model}>📱 {modelo}</Text> : null}
       </View>
     </TouchableOpacity>
   );

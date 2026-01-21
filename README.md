@@ -47,6 +47,11 @@ aureeliooooo/
 
 ## 🚀 Instalación y Configuración
 
+### Variables de entorno (Supabase)
+- Copia `.env.example` a `.env` y define `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
+- Tablas esperadas: `products`, `orders`, `order_items`, `repair_services`, `appointments`, `notifications`.
+- La app consume datos de Supabase para productos, servicios, pedidos, citas y notificaciones; el contacto se mantiene en el frontend.
+
 ### Prerrequisitos
 
 1. **Node.js** (v14 o superior)

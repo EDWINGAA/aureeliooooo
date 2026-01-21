@@ -1,5 +1,5 @@
 // NotificacionesScreen.js - Pantalla opcional para mostrar notificaciones
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,43 +7,54 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
 } from 'react-native';
+import {
+  getNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from '../services/notificationService';
 
-const NotificacionesScreen = () => {
-  const notificaciones = [
-    {
-      id: '1',
-      tipo: 'reparacion',
-      titulo: 'Reparación completada',
-      mensaje: 'Tu iPhone 14 Pro está listo para recoger',
-      fecha: '2026-01-12T10:30:00',
-      leido: false,
-    },
-    {
-      id: '2',
-      tipo: 'pedido',
-      titulo: 'Pedido en camino',
-      mensaje: 'Tu pedido #1234 será entregado hoy',
-      fecha: '2026-01-11T15:20:00',
-      leido: false,
-    },
-    {
-      id: '3',
-      tipo: 'cita',
-      titulo: 'Recordatorio de cita',
-      mensaje: 'Tu cita es mañana a las 14:00',
-      fecha: '2026-01-10T09:00:00',
-      leido: true,
-    },
-    {
-      id: '4',
-      tipo: 'promo',
-      titulo: '¡Oferta especial!',
-      mensaje: '20% de descuento en cristales templados',
-      fecha: '2026-01-09T12:00:00',
-      leido: true,
-    },
-  ];
+const NotificacionesScreen = ({ navigation }) => {
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [fromSupabase, setFromSupabase] = useState(false);
+
+  // Evita que se muestren restos antiguos de "(ID: ...)" en mensajes guardados previamente
+  const cleanMessage = (text) => {
+    if (!text) return '';
+    return text.replace(/\s*\(ID:.*?\)\s*/i, ' ').replace(/\s{2,}/g, ' ').trim();
+  };
+
+  const loadData = async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    const result = await getNotifications();
+    if (result.success && result.data) {
+      const mapped = result.data.map((n) => ({
+        id: n.id,
+        tipo: n.type || 'general',
+        titulo: n.title,
+        mensaje: cleanMessage(n.message),
+        fecha: n.created_at,
+        leido: !!n.read,
+      }));
+      setNotificaciones(mapped);
+      setFromSupabase(true);
+    } else {
+      setNotificaciones([]);
+      setFromSupabase(false);
+    }
+    setLoading(false);
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const getIconForType = (tipo) => {
     switch (tipo) {
@@ -73,39 +84,73 @@ const NotificacionesScreen = () => {
     });
   };
 
+
+  const handleMarkAll = async () => {
+    if (!fromSupabase) return;
+    const res = await markAllNotificationsRead();
+    if (!res.success) {
+      Alert.alert('Error', res.error || 'No se pudieron marcar como leídas');
+      return;
+    }
+    loadData();
+  };
+
+  const handlePress = async (notif) => {
+    if (fromSupabase) {
+      await markNotificationRead(notif.id);
+    }
+    setNotificaciones((prev) => prev.map((n) => (n.id === notif.id ? { ...n, leido: true } : n)));
+    navigation.navigate('NotificationDetail', { notif: { ...notif, leido: true } });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Notificaciones</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleMarkAll}>
           <Text style={styles.markAllRead}>Marcar todas como leídas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => loadData(true)}>
+          <Text style={styles.refresh}>Recargar</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {notificaciones.map((notif) => (
-          <TouchableOpacity
-            key={notif.id}
-            style={[
-              styles.notificationCard,
-              !notif.leido && styles.notificationUnread,
-            ]}
-          >
-            <View style={styles.iconContainer}>
-              <Text style={styles.icon}>{getIconForType(notif.tipo)}</Text>
-            </View>
-            <View style={styles.contentContainer}>
-              <Text style={styles.titulo}>{notif.titulo}</Text>
-              <Text style={styles.mensaje} numberOfLines={2}>
-                {notif.mensaje}
-              </Text>
-              <Text style={styles.fecha}>{formatFecha(notif.fecha)}</Text>
-            </View>
-            {!notif.leido && <View style={styles.unreadDot} />}
-          </TouchableOpacity>
-        ))}
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+      {loading ? (
+        <ActivityIndicator style={styles.loader} color="#007AFF" size="large" />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} />
+          }
+        >
+          {notificaciones.map((notif) => (
+            <TouchableOpacity
+              key={notif.id}
+              style={[
+                styles.notificationCard,
+                !notif.leido && styles.notificationUnread,
+              ]}
+              onPress={() => handlePress(notif)}
+            >
+              <View style={styles.iconContainer}>
+                <Text style={styles.icon}>{getIconForType(notif.tipo)}</Text>
+              </View>
+              <View style={styles.contentContainer}>
+                <View style={styles.badgeRow}>
+                  <Text style={styles.badge}>{notif.tipo?.toUpperCase() || 'GENERAL'}</Text>
+                </View>
+                <Text style={styles.titulo}>{notif.titulo}</Text>
+                <Text style={styles.mensaje} numberOfLines={2}>
+                  {notif.mensaje}
+                </Text>
+                <Text style={styles.fecha}>{formatFecha(notif.fecha)}</Text>
+              </View>
+              {!notif.leido && <View style={styles.unreadDot} />}
+            </TouchableOpacity>
+          ))}
+          <View style={styles.bottomSpacer} />
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -133,6 +178,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  refresh: {
+    fontSize: 13,
+    color: '#007AFF',
+    fontWeight: '600',
+    marginLeft: 12,
   },
   notificationCard: {
     backgroundColor: '#fff',
@@ -162,6 +213,20 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 24,
   },
+  badgeRow: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  badge: {
+    backgroundColor: '#E8F0FF',
+    color: '#0050C8',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
   contentContainer: {
     flex: 1,
   },
@@ -187,6 +252,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#007AFF',
     marginLeft: 8,
     alignSelf: 'center',
+  },
+  loader: {
+    marginTop: 20,
   },
   bottomSpacer: {
     height: 20,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,116 +7,50 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Modal,
-  FlatList,
 } from 'react-native';
-import { reparacionesData } from '../data/mockData';
 import ServiceCard from '../components/ServiceCard';
+import { getRepairServices } from '../services/appointmentService';
 
 const ReparacionesScreen = ({ navigation }) => {
-  const [selectedFamilia, setSelectedFamilia] = useState(reparacionesData[0]);
-  const [selectedModel, setSelectedModel] = useState(reparacionesData[0].modelos[0]);
-  const [menuOpen, setMenuOpen] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedFamiliaForModal, setSelectedFamiliaForModal] = useState(null);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleSelectModel = (modelo) => {
-    setSelectedModel(modelo);
-    setModalVisible(false);
-    setMenuOpen(null);
-  };
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const result = await getRepairServices();
+      if (result.success) {
+        setServices(result.data || []);
+      }
+      setLoading(false);
+    };
 
-  const openMenu = (familia) => {
-    setSelectedFamiliaForModal(familia);
-    setModalVisible(true);
-  };
+    load();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Servicios de Reparación</Text>
-        <Text style={styles.headerSubtitle}>Selecciona tu modelo de iPhone</Text>
+        <Text style={styles.headerSubtitle}>Servicios disponibles en tienda</Text>
       </View>
 
-      {/* Model Selector */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.modelSelector}
-        contentContainerStyle={styles.modelSelectorContent}
-        scrollEnabled={true}
-      >
-        {reparacionesData.map((familia) => (
-          <TouchableOpacity
-            key={familia.id}
-            style={[
-              styles.modelButton,
-              menuOpen === familia.id && styles.modelButtonActive,
-            ]}
-            onPress={() => openMenu(familia)}
-          >
-            <Text
-              style={[
-                styles.modelButtonText,
-                menuOpen === familia.id && styles.modelButtonTextActive,
-              ]}
-            >
-              {familia.familia}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Modal Dropdown Menu */}
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setModalVisible(false)}
-        >
-          <View style={styles.dropdownMenuModal}>
-            {selectedFamiliaForModal && selectedFamiliaForModal.modelos.map((modelo) => (
-              <TouchableOpacity
-                key={modelo.id}
-                style={[
-                  styles.dropdownItem,
-                  selectedModel.id === modelo.id && styles.dropdownItemSelected,
-                ]}
-                onPress={() => handleSelectModel(modelo)}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    selectedModel.id === modelo.id && styles.dropdownItemTextSelected,
-                  ]}
-                >
-                  {modelo.modelo}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* Services List */}
       <ScrollView style={styles.servicesList} showsVerticalScrollIndicator={false}>
-        <Text style={styles.servicesTitle}>Servicios disponibles</Text>
-        {selectedModel.servicios.map((servicio) => (
-          <ServiceCard
-            key={servicio.id}
-            servicio={servicio}
-            modelo={selectedModel.modelo}
-            onPress={() => navigation.navigate('Citas')}
-          />
-        ))}
+        <Text style={styles.servicesTitle}>{loading ? 'Cargando servicios...' : 'Servicios disponibles'}</Text>
+        {services.length === 0 && !loading ? (
+          <Text style={styles.emptyText}>No hay servicios disponibles.</Text>
+        ) : (
+          services.map((servicio) => (
+            <ServiceCard
+              key={servicio.id}
+              servicio={servicio}
+              onPress={() => navigation.navigate('Citas')}
+            />
+          ))
+        )}
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* CTA Button */}
       <View style={styles.ctaContainer}>
         <TouchableOpacity
           style={styles.ctaButton}

@@ -242,9 +242,9 @@ export const accesoriosData = [
 
 // Información de contacto
 export const contactoData = {
-  telefono: '+1234567890',
-  whatsapp: '+1234567890',
-  direccion: 'Av. Principal #123, Ciudad',
+  telefono: '+52 1 653 113 2222',
+  whatsapp: '+52 1 653 113 2222',
+  direccion: 'Av. Jalisco, 83457 San Luis Río Colorado, Son.',
   horario: 'Lun-Vie: 9:00-19:00, Sáb: 10:00-14:00',
   email: 'contacto@reparacionmovil.com'
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 import { useCart } from '../context/CartContext';
 import CartItem from '../components/CartItem';
+import { createOrder, addOrderItem } from '../services/orderService';
+import { createNotification } from '../services/notificationService';
 
 const CarritoScreen = () => {
+  const [processing, setProcessing] = useState(false);
   const { 
     cartItems, 
     updateQuantity, 
@@ -34,12 +37,59 @@ const CarritoScreen = () => {
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Confirmar',
-          onPress: () => {
-            Alert.alert(
-              '¡Pedido Confirmado!',
-              'Gracias por tu compra. Te contactaremos pronto para coordinar la entrega.',
-              [{ text: 'OK', onPress: () => clearCart() }]
-            );
+          onPress: async () => {
+            try {
+              setProcessing(true);
+              const orderResult = await createOrder({ total_amount: getCartTotal() });
+              if (!orderResult.success) {
+                throw new Error(orderResult.error || 'No se pudo crear la orden');
+              }
+
+              const orderId = orderResult.data.id;
+              const itemPromises = cartItems.map((item) =>
+                addOrderItem({
+                  order_id: orderId,
+                  product_id: item.id,
+                  quantity: item.quantity,
+                  price_at_purchase: item.price,
+                })
+              );
+
+              const itemResults = await Promise.all(itemPromises);
+              const failed = itemResults.find((r) => !r.success);
+              if (failed) {
+                throw new Error(failed.error || 'No se pudieron registrar los items');
+              }
+
+              // Crear notificación en Supabase (best-effort)
+              const itemsResumen = cartItems
+                .map((item) => {
+                  const label = item.nombre || item.name || 'Producto';
+                  const price = (item.price ?? 0).toFixed(2);
+                  return `${label} x${item.quantity} ($${price})`;
+                })
+                .join(', ');
+
+              const notifResult = await createNotification({
+                type: 'pedido',
+                title: 'Compra de accesorios',
+                message: `Compra confirmada. Artículos: ${itemsResumen}. Total pagado: $${getCartTotal().toFixed(2)}`,
+              });
+
+              if (!notifResult.success) {
+                console.warn('No se pudo crear la notificación de pedido:', notifResult.error);
+              }
+
+              Alert.alert(
+                '¡Pedido Confirmado!',
+                'Gracias por tu compra. Te contactaremos pronto para coordinar la entrega.',
+                [{ text: 'OK', onPress: () => clearCart() }]
+              );
+            } catch (error) {
+              Alert.alert('Error', error.message || 'No se pudo procesar el pedido');
+            } finally {
+              setProcessing(false);
+            }
           },
         },
       ]
@@ -79,7 +129,7 @@ const CarritoScreen = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Mi Carrito</Text>
         <Text style={styles.headerSubtitle}>
-          {getCartItemsCount()} {getCartItemsCount() === 1 ? 'artículo' : 'artículos'}
+          {processing ? 'Procesando...' : `${getCartItemsCount()} ${getCartItemsCount() === 1 ? 'artículo' : 'artículos'}`}
         </Text>
       </View>
 
@@ -116,8 +166,8 @@ const CarritoScreen = () => {
           <Text style={styles.totalValue}>${getCartTotal().toFixed(2)}</Text>
         </View>
 
-        <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
-          <Text style={styles.checkoutButtonText}>Finalizar Compra</Text>
+        <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout} disabled={processing}>
+          <Text style={styles.checkoutButtonText}>{processing ? 'Procesando...' : 'Finalizar Compra'}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

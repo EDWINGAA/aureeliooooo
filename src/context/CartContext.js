@@ -14,6 +14,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (product) => {
+    const price = product.price ?? product.precio ?? 0;
     setCartItems((prevItems) => {
       const existingItem = prevItems.find(item => item.id === product.id);
       
@@ -25,7 +26,7 @@ export const CartProvider = ({ children }) => {
         );
       }
       
-      return [...prevItems, { ...product, quantity: 1 }];
+      return [...prevItems, { ...product, price, quantity: 1 }];
     });
   };
 

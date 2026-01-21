@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getRepairServices } from '../services/appointmentService';
 import { createAppointment } from '../services/appointmentService';
+import { createNotification } from '../services/notificationService';
 
 const CitasScreen = () => {
   const [formData, setFormData] = useState({
@@ -94,6 +95,19 @@ const CitasScreen = () => {
       });
 
       if (result.success) {
+        // Notificación: cita agendada
+        const fechaTexto = `${date.toLocaleDateString('es-ES')} ${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        const serviceName = selectedService?.name || 'Servicio de reparación';
+        const notifResult = await createNotification({
+          type: 'cita',
+          title: 'Cita de reparación agendada',
+          message: `Cita programada: ${serviceName} el ${fechaTexto}. Cliente: ${formData.nombre}, Tel: ${formData.telefono}. Te contactaremos para confirmar la disponibilidad.`,
+        });
+
+        if (!notifResult.success) {
+          console.warn('No se pudo crear la notificación de cita:', notifResult.error);
+        }
+
         Alert.alert(
           '¡Cita Agendada!',
           `Tu cita ha sido registrada para ${date.toLocaleDateString('es-ES')} a las ${time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.\n\nTe contactaremos pronto para confirmar.`,

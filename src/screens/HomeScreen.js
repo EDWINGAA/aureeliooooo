@@ -12,7 +12,7 @@ import {
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { contactoData } from '../data/mockData';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
   const handleWhatsApp = () => {
     Linking.openURL(`whatsapp://send?phone=${contactoData.whatsapp}`);
   };

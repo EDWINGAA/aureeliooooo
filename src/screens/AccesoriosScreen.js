@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,19 +8,36 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
-import { accesoriosData } from '../data/mockData';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import { getProducts } from '../services/productService';
 
 const AccesoriosScreen = () => {
   const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const categories = ['Todos', 'Fundas', 'Cristales', 'Cargadores', 'Cables', 'Audio', 'Accesorios'];
 
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      const result = await getProducts();
+      if (result.success) {
+        setProducts(result.data || []);
+      } else {
+        setProducts([]);
+      }
+      setLoading(false);
+    };
+
+    load();
+  }, []);
+
   const filteredProducts = selectedCategory === 'Todos'
-    ? accesoriosData
-    : accesoriosData.filter(product => product.categoria === selectedCategory);
+    ? products
+    : products.filter(product => product.categoria === selectedCategory);
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -67,7 +84,7 @@ const AccesoriosScreen = () => {
       {/* Products List */}
       <ScrollView style={styles.productsList} showsVerticalScrollIndicator={false}>
         <Text style={styles.productsCount}>
-          {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''}
+          {loading ? 'Cargando...' : `${filteredProducts.length} producto${filteredProducts.length !== 1 ? 's' : ''}`}
         </Text>
         {filteredProducts.map((product) => (
           <ProductCard
