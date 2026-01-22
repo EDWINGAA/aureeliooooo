@@ -82,7 +82,7 @@ const CarritoScreen = () => {
 
               Alert.alert(
                 '¡Pedido Confirmado!',
-                'Gracias por tu compra. Te contactaremos pronto para coordinar la entrega.',
+                `Gracias por tu compra. Pasa a sucursal a pagar con tu ID: ${orderId.substring(0, 8)}`,
                 [{ text: 'OK', onPress: () => clearCart() }]
               );
             } catch (error) {
@@ -156,10 +156,7 @@ const CarritoScreen = () => {
           <Text style={styles.summaryLabel}>Subtotal:</Text>
           <Text style={styles.summaryValue}>${getCartTotal().toFixed(2)}</Text>
         </View>
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Envío:</Text>
-          <Text style={styles.summaryValue}>Gratis</Text>
-        </View>
+
         <View style={styles.divider} />
         <View style={styles.summaryRow}>
           <Text style={styles.totalLabel}>Total:</Text>

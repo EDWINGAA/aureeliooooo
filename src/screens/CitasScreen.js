@@ -57,12 +57,25 @@ const CitasScreen = () => {
     loadServices();
   }, []);
 
-  const handleDateChange = (event, selectedDate) => {
+ const handleDateChange = (event, selectedDate) => {
     if (Platform.OS === 'android') {
       setShowDatePicker(false);
     }
     if (selectedDate) {
-      setDate(selectedDate);
+      // Obtener el año actual
+      const currentYear = new Date().getFullYear();
+      const selectedYear = selectedDate.getFullYear();
+      
+      // Si la fecha seleccionada es del año actual, permitirla
+      // Si es de otro año, forzar al año actual
+      if (selectedYear === currentYear) {
+        setDate(selectedDate);
+      } else {
+        // Crear una nueva fecha con el mismo día y mes pero del año actual
+        const correctedDate = new Date(selectedDate);
+        correctedDate.setFullYear(currentYear);
+        setDate(correctedDate);
+      }
     }
   };
 
@@ -71,7 +84,17 @@ const CitasScreen = () => {
       setShowTimePicker(false);
     }
     if (selectedTime) {
-      setTime(selectedTime);
+      // Validar que la hora esté entre 10 AM (10) y 6 PM (18)
+      const hour = selectedTime.getHours();
+      if (hour >= 10 && hour < 18) {
+        // Establecer minutos en 0 (solo horas en punto)
+        const adjustedTime = new Date(selectedTime);
+        adjustedTime.setMinutes(0);
+        adjustedTime.setSeconds(0);
+        setTime(adjustedTime);
+      } else {
+        Alert.alert('Horario no disponible', 'Las citas deben ser entre las 10:00 AM y las 6:00 PM');
+      }
     }
   };
 
@@ -257,8 +280,10 @@ const CitasScreen = () => {
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleDateChange}
               minimumDate={new Date()}
+              maximumDate={new Date(new Date().getFullYear(), 11, 31)}
             />
           )}
+
 
           <Text style={styles.label}>Hora preferida</Text>
           <TouchableOpacity
@@ -272,12 +297,51 @@ const CitasScreen = () => {
           </TouchableOpacity>
 
           {showTimePicker && (
-            <DateTimePicker
-              value={time}
-              mode="time"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleTimeChange}
-            />
+            <Modal
+              visible={showTimePicker}
+              transparent
+              animationType="fade"
+            >
+              <View style={styles.pickerContainer}>
+                <View style={styles.pickerContent}>
+                  <View style={styles.pickerHeader}>
+                    <Text style={styles.pickerTitle}>Selecciona una hora</Text>
+                    <TouchableOpacity onPress={() => setShowTimePicker(false)}>
+                      <Text style={styles.pickerCloseButton}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <FlatList
+                    data={Array.from({ length: 8 }, (_, i) => ({ 
+                      hour: 10 + i, 
+                      id: String(10 + i) 
+                    }))}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={[
+                          styles.timeOption,
+                          time.getHours() === item.hour && styles.timeOptionActive
+                        ]}
+                        onPress={() => {
+                          const newTime = new Date(time);
+                          newTime.setHours(item.hour, 0, 0);
+                          setTime(newTime);
+                          setShowTimePicker(false);
+                        }}
+                      >
+                        <Text style={[
+                          styles.timeOptionText,
+                          time.getHours() === item.hour && styles.timeOptionTextActive
+                        ]}>
+                          {String(item.hour).padStart(2, '0')}:00
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    scrollEnabled={false}
+                  />
+                </View>
+              </View>
+            </Modal>
           )}
 
           {/* Submit Button */}
@@ -573,6 +637,80 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
     textAlign: 'center',
+  },
+  timePickerModal: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 60,
+  },
+  timePickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  pickerContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pickerContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    width: '80%',
+    maxHeight: '70%',
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  pickerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1a1a1a',
+  },
+  pickerCloseButton: {
+    fontSize: 24,
+    color: '#666',
+  },
+  pickerDoneButton: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#007AFF',
+  },
+  picker: {
+    height: 200,
+  },
+  timeOption: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  timeOptionActive: {
+    backgroundColor: '#f0f7ff',
+  },
+  timeOptionText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#666',
+    textAlign: 'center',
+  },
+  timeOptionTextActive: {
+    color: '#007AFF',
+    fontWeight: '700',
   },
 });
 
