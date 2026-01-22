@@ -19,9 +19,9 @@ Sprint 3 – Funciones clave
 - [x] Notificaciones básicas (logrado el 14/01/2026)
 
 Sprint 4 – Pruebas y entrega
-- [ ] Pruebas funcionales
-- [ ] Corrección de errores
-- [ ] Optimización
+- [x] Pruebas funcionales
+- [x] Corrección de errores
+- [x] Optimización
 - [ ] Publicación en tiendas
 
 Notas rápidas:
