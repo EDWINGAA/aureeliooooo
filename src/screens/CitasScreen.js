@@ -58,14 +58,18 @@ const CitasScreen = () => {
   }, []);
 
   const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
     if (selectedDate) {
       setDate(selectedDate);
     }
   };
 
   const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(Platform.OS === 'ios');
+    if (Platform.OS === 'android') {
+      setShowTimePicker(false);
+    }
     if (selectedTime) {
       setTime(selectedTime);
     }
@@ -166,10 +170,17 @@ const CitasScreen = () => {
           <Text style={styles.label}>Teléfono *</Text>
           <TextInput
             style={styles.input}
-            placeholder="Ej: +1234567890"
+            placeholder="Ej: 1234567890 (10 dígitos)"
             value={formData.telefono}
-            onChangeText={(text) => setFormData({ ...formData, telefono: text })}
-            keyboardType="phone-pad"
+            onChangeText={(text) => {
+              // Solo permitir números y máximo 10 dígitos
+              const numericValue = text.replace(/[^0-9]/g, '');
+              if (numericValue.length <= 10) {
+                setFormData({ ...formData, telefono: numericValue });
+              }
+            }}
+            keyboardType="number-pad"
+            maxLength={10}
             editable={!loading}
           />
 
@@ -243,7 +254,7 @@ const CitasScreen = () => {
             <DateTimePicker
               value={date}
               mode="date"
-              display="default"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleDateChange}
               minimumDate={new Date()}
             />
@@ -264,7 +275,7 @@ const CitasScreen = () => {
             <DateTimePicker
               value={time}
               mode="time"
-              display="default"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleTimeChange}
             />
           )}
